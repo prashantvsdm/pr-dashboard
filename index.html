@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>K P C L / R T P S &mdash; EE(BM)-1 | Procurement Dashboard 2025-26</title>
+<title>KPCL / RTPS &mdash; EE(BM)-1 | Procurement Dashboard 2025-26</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -301,6 +301,8 @@ tr.delayed-row:hover td{background:#ffedd5}
 // App logic — called after data is fetched
 function bootApp() {
   var RAW_DATA = window.RAW_DATA || [];
+  // Expose global functions needed by inline onclick handlers
+  window._RAW = RAW_DATA;
   if (!RAW_DATA.length) {
     document.getElementById('kpiGrid').innerHTML =
       '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#dc2626">No data found in pr_data.json</div>';
@@ -667,7 +669,7 @@ function exportCSV() {
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
 function openModal(idx) {
-  var r = RAW_DATA[idx];
+  var r = window._RAW ? window._RAW[idx] : (window.RAW_DATA||[])[idx];
   if (!r) return;
   document.getElementById('mTag').textContent   = getStage(r) + ' \u00b7 ' + (r.majorClassDesc||'');
   document.getElementById('mTitle').textContent = r.itemDesc || r.itemCode || '\u2014';
@@ -723,6 +725,14 @@ function closeModalDirect() { document.getElementById('modalOverlay').classList.
   });
   })();
 
+
+  // Expose to global scope for inline onclick handlers
+  window.openModal        = openModal;
+  window.closeModal       = closeModal;
+  window.closeModalDirect = closeModalDirect;
+  window.sortTable        = sortTable;
+  window.clearFilters     = clearFilters;
+  window.exportCSV        = exportCSV;
 } // end bootApp
 </script>
 
